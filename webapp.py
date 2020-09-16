@@ -216,10 +216,10 @@ class VehicleDistance:
                     if len(subset)==2:
                         a = np.array((subset[0][2], subset[0][3]))
                         b = np.array((subset[1][2], subset[1][3]))
-                        dist = np.linalg.norm(a-b)      ## Eucledian distance if you want differnt ways to measure distance b/w two boxes you can use the following options
+                        dist = np.linalg.norm(a-b)      ## Euclidean distance if you want different ways to measure distance b/w two boxes you can use the following options
                         # dist = spatial.distance.cosine(a, b)
-                        # # print ('Eucledian distance is version-1', dist)
-                        # # print ('Eucledian distance is', spatial.distance.euclidean(a, b))
+                        # # print ('Euclidean distance is version-1', dist)
+                        # # print ('Euclidean distance is', spatial.distance.euclidean(a, b))
                         # print ('Cosine distance is', dist)
                         if dist < 250 :
                             red_counter += len(subset)

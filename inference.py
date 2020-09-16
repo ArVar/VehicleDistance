@@ -36,7 +36,7 @@ from torchgpipe import GPipe
 
 
 parser = argparse.ArgumentParser(
-    description='Social Distance Monitoring')
+    description='Vehicle Distance')
 parser.add_argument('-m', '--model',
     default='weights/yolact_plus_base_54_800000.pth', type=str,
     help='Trained state_dict file path to open. If "interrupt", this will open the interrupt file.')
@@ -77,17 +77,17 @@ coco_cats_inv = {}
 color_cache = defaultdict(lambda: {})
 
 ## Creating dictinary to store logs 
-log = {"total_person": 0,"total_person_in_red_zone": 0 , "total_person_in_green_zone": 0}
+log = {"total_vehicle": 0,"total_vehicle_in_red_zone": 0 , "total_vehicle_in_green_zone": 0}
 
 
     ##Setting video codecs to save frames after operation
 # fourcc = cv2.VideoWriter_fourcc(*'MJPG')
 # out = cv2.VideoWriter("monitor.avi", fourcc, 20.0, (1280, 720))
 
-class SocialDistance:
+class VehicleDistance:
     def __init__(self,id):
         # self.cap = cv2.VideoCapture(id)
-        self.cap = WebcamVideoStream(src = id).start() × 
+        self.cap = WebcamVideoStream(src = id).start()
         self.width = 640#1280#1920
         self.height = 480#720#1080#
         self.display_lincomb = False
@@ -229,20 +229,20 @@ class SocialDistance:
             def draw_distance(boxes):
                 """
                     input : boxes(type=list)
-                    Make all possible combinations between the detected boxes of persons
+                    Make all possible combinations between the detected boxes of vehicles
                     perform distance measurement between the boxes to measure distancing
                 
                 """
-                red_counter = 0                        ## Countting people who are in high risk
+                red_counter = 0                        ## Countting vehicles who are in high risk
                 green_counter = 0
                 for subset in all_subsets(boxes):
                     if len(subset)==2:
                         a = np.array((subset[0][2], subset[0][3]))
                         b = np.array((subset[1][2], subset[1][3]))
-                        dist = np.linalg.norm(a-b)      ## Eucledian distance if you want differnt ways to measure distance b/w two boxes you can use the following options
+                        dist = np.linalg.norm(a-b)      ## Euclidean distance if you want different ways to measure distance b/w two boxes you can use the following options
                         # dist = spatial.distance.cosine(a, b)
-                        # # print ('Eucledian distance is version-1', dist)
-                        # # print ('Eucledian distance is', spatial.distance.euclidean(a, b))
+                        # # print ('Euclidean distance is version-1', dist)
+                        # # print ('Euclidean distance is', spatial.distance.euclidean(a, b))
                         # print ('Cosine distance is', dist)
                         if dist < 250 :
                             red_counter += len(subset)
@@ -251,8 +251,8 @@ class SocialDistance:
                         elif dist < 300:
                             green_counter += len(subset)
                             cv2.line(img_numpy, (subset[0][2], subset[0][3]), (subset[1][2], subset[1][3]), (0,255,0) , lineThickness)
-                    log["total_person_in_red_zone"] = red_counter//2
-                    log["total_person_in_green_zone"] = green_counter//2
+                    log["total_vehicle_in_red_zone"] = red_counter//2
+                    log["total_vehicle_in_green_zone"] = green_counter//2
                    
             for j in reversed(range(num_dets_to_consider)):
                 x1, y1, x2, y2 = boxes[j, :]
@@ -264,8 +264,8 @@ class SocialDistance:
 
                 if self.display_text:
                     _class = cfg.dataset.class_names[classes[j]]
-                    if _class == "person":
-                        log["total_person"] = num_dets_to_consider
+                    if _class == "vehicle":
+                        log["total_vehicle"] = num_dets_to_consider
                         distance_boxes.append(boxes[j, :].tolist())
                         draw_distance(distance_boxes)
 
@@ -300,11 +300,11 @@ class SocialDistance:
             inputs = q.get()
             q.task_done()
             ## Desiging the frame with necessary infos
-            title = "Social Distance Monitoring - COVID19"
-            total_person = "Total = {}".format(log["total_person"])
+            title = "Vehicle Distance Monitoring"
+            total_vehicle = "Total = {}".format(log["total_vehicle"])
             
-            red_zone = "High Risk = {}".format(log["total_person_in_red_zone"])
-            green_zone = "Safe Distance = {}".format(log["total_person_in_green_zone"])
+            red_zone = "High Risk = {}".format(log["total_vehicle_in_red_zone"])
+            green_zone = "Safe Distance = {}".format(log["total_vehicle_in_green_zone"])
             notification_bar_thickness = 3
 
             overlay = inputs.copy()
@@ -317,13 +317,13 @@ class SocialDistance:
             cv2.addWeighted(overlay,opacity,background,1-opacity,0, inputs)
 
             cv2.putText(inputs,title, (int(self.width*.1524),int(self.height*.0699)), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)               ### Text Main Title
-            cv2.putText(inputs,total_person, (int(self.width*.0393),int(self.height*.889)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 0), 2, cv2.LINE_AA)      ### Text Total Person
+            cv2.putText(inputs,total_vehicle, (int(self.width*.0393),int(self.height*.889)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 0), 2, cv2.LINE_AA)      ### Text Total vehicle
 
             cv2.line(inputs, (int(self.width*.0119),int(self.height*.917)), (int(self.width*.0313),int(self.height*.917)), (0,0,255) , notification_bar_thickness)                             ### Line red-zone
-            cv2.putText(inputs,red_zone, (int(self.width*.0393),int(self.height*.931)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 1, cv2.LINE_AA)        ### Text Red Zone Person
+            cv2.putText(inputs,red_zone, (int(self.width*.0393),int(self.height*.931)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 1, cv2.LINE_AA)        ### Text Red Zone vehicle
 
             cv2.line(inputs, (int(self.width*.0119),int(self.height*.9723)), (int(self.width*.0313),int(self.height*.9723)), (0,255,0) , notification_bar_thickness)                             ### Line Green-zone
-            cv2.putText(inputs,green_zone, (int(self.width*.0393),int(self.height*.9864)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 255, 0), 1, cv2.LINE_AA)      ### Text green Zone Person
+            cv2.putText(inputs,green_zone, (int(self.width*.0393),int(self.height*.9864)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 255, 0), 1, cv2.LINE_AA)      ### Text green Zone vehicle
             
 
             with torch.no_grad():
@@ -338,7 +338,7 @@ class SocialDistance:
             if cv2.waitKey(1)&0xFF == ord('q'):
                 break
             
-            cv2.imshow('Social-Distance', frame)
+            cv2.imshow('Vehicle-Distance', frame)
             # print("GPU Usage after emptying the cache")
             torch.cuda.empty_cache()
             # gpu_usage()
@@ -347,4 +347,4 @@ class SocialDistance:
         # cv2.destroyAllWindows()
 if __name__ == "__main__":
     id = args.id
-    SocialDistance(id).main()
+    VehicleDistance(id).main()
