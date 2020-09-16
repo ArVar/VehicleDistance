@@ -1,4 +1,4 @@
-# Social-Distance-Monitoring
+# Vehicle-Distance-Monitoring
 
 ## Introduction
 
