@@ -69,7 +69,7 @@ class VehicleDistance:
         self.score_threshold = 0.15
         self.top_k = 30
         self.display_masks = True
-        self.display_fps = False
+        self.display_fps = True
         self.display_text  = True
         self.display_bboxes = True
         self.display_scores = False
@@ -96,7 +96,8 @@ class VehicleDistance:
         Note: If undo_transform=False then im_h and im_w are allowed to be None.
         """
         
-        lineThickness = 2
+        lineThickness = 1
+        lineThicknessDanger = 2
         
 
         if undo_transform:
@@ -221,9 +222,9 @@ class VehicleDistance:
                         # # print ('Euclidean distance is version-1', dist)
                         # # print ('Euclidean distance is', spatial.distance.euclidean(a, b))
                         # print ('Cosine distance is', dist)
-                        if dist < 250 :
+                        if dist < 50 :
                             red_counter += len(subset)
-                            cv2.line(img_numpy, (subset[0][2], subset[0][3]), (subset[1][2], subset[1][3]), (0,0,255) , lineThickness)
+                            cv2.line(img_numpy, (subset[0][2], subset[0][3]), (subset[1][2], subset[1][3]), (0,0,255) , lineThicknessDanger)
                             
                         elif dist < 300:
                             green_counter += len(subset)
@@ -270,6 +271,7 @@ class VehicleDistance:
     
     def main(self):
         q = queue.Queue()
+
         while True:
             def frame_render(queue_from_cam):
                 frame = self.cap.read() # If you capture stream using opencv (cv2.VideoCapture()) the use the following line
@@ -284,7 +286,7 @@ class VehicleDistance:
             
             ## Desiging the frame with necessary infos
             title = "Vehicle Distance Monitoring"
-            total_vehicle = "Total = {}".format(log["total_vehicle"])
+            total_vehicle = "Total Count = {}".format(log["total_vehicle"])
             # print(log)
             red_zone = "High Risk = {}".format(log["total_vehicle_in_red_zone"])
             green_zone = "Safe Distance = {}".format(log["total_vehicle_in_green_zone"])
@@ -294,18 +296,18 @@ class VehicleDistance:
             background = inputs.copy()
             opacity = 0.4
             
-            cv2.rectangle(overlay, (0, 0), (1280, 100), (255,255,255), -1)
+            #cv2.rectangle(overlay, (0, 0), (1280, 100), (255,255,255), -1)
             cv2.rectangle(overlay, (0, 615), (400, 720), (255,255,255), -1)
-            cv2.addWeighted(overlay,opacity,background,1-opacity,0, inputs)
+            cv2.addWeighted(overlay, opacity, background, 1-opacity, 0, inputs)
 
-            cv2.putText(inputs,title, (195,50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)               ### Text Main Title
-            cv2.putText(inputs,total_vehicle, (50,640), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 0), 2, cv2.LINE_AA)      ### Text Total vehicle
+            #cv2.putText(inputs, title, (195,50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)               ### Text Main Title
+            cv2.putText(inputs, total_vehicle, (50,640), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 0), 1, cv2.LINE_AA)      ### Text Total vehicle
 
             cv2.line(inputs, (15,660), (40,660), (0,0,255) , notification_bar_thickness)                             ### Line red-zone
-            cv2.putText(inputs,red_zone, (50,670), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 1, cv2.LINE_AA)        ### Text Red Zone vehicle
+            cv2.putText(inputs, red_zone, (50,670), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 1, cv2.LINE_AA)        ### Text Red Zone vehicle
 
-            cv2.line(inputs, (15,700), (40,700), (0,255,0) , notification_bar_thickness)                             ### Line Green-zone
-            cv2.putText(inputs,green_zone, (50,710), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 255, 0), 1, cv2.LINE_AA)      ### Text green Zone vehicle
+            cv2.line(inputs, (15,700), (40,700), (0,255,0), notification_bar_thickness)                             ### Line Green-zone
+            cv2.putText(inputs, green_zone, (50,710), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 255, 0), 1, cv2.LINE_AA)      ### Text green Zone vehicle
             
             with torch.no_grad():
                 inputs = torch.from_numpy(inputs).cuda().float()
@@ -314,12 +316,7 @@ class VehicleDistance:
                 preds = self.model(images)
                 frame = self.prep_display(preds, inputs, None, None, undo_transform=False)
 
-            
             ret, jpeg = cv2.imencode('.jpg', frame)
             torch.cuda.empty_cache()
-            return jpeg.tostring()
-            
-            
-            
-            
 
+            return jpeg.tostring(), frame
