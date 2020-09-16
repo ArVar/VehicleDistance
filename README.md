@@ -4,7 +4,9 @@
 
 This repository holds the implementation of detecting vehicles and monitoring their distances using  [YOLACT++: Better Real-time Instance Segmentation](https://arxiv.org/abs/1912.06218)) for object detection.
 
-It is based on the repository [Social-Distance-Monitoring](https://github.com/paul-pias/Social-Distance-Monitoring) by Paul Pias.
+It is based on the repository [Social-Distance-Monitoring](https://github.com/paul-pias/Social-Distance-Monitoring) by Pias Paul.
+
+![image info](./data/output.gif)
 
 ## User Guideline
 
@@ -103,6 +105,6 @@ This formula was applied in the **draw_distance(boxes)** function where we got a
 
 ### Acknowledgements
 
-Thanks to **Paul Pias** for providing his [repository](https://github.com/paul-pias/Social-Distance-Monitoring) on github. It was a very good starting point with just very few caveats when running on Windows. I recommend, checking out his other repos as well.
+Thanks to **Pias Paul** for providing his [repository](https://github.com/paul-pias/Social-Distance-Monitoring) on github. It was a very good starting point with just very few caveats when running on Windows. I recommend, checking out his other repos as well.
 
 Thanks to **Daniel Bolya** et. el for introducing Single Shot detection (SSD) implementation for segmentation in  [YOLACT](https://arxiv.org/abs/1904.02689) & [YOLACT++](https://arxiv.org/abs/1912.06218) as it becomes less memory hungry.
