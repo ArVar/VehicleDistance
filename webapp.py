@@ -62,8 +62,8 @@ class VehicleDistance:
     def __init__(self,id):
         # self.cap = cv2.VideoCapture(id)
         self.cap = WebcamVideoStream(src = id).start()
-        self.width = 1280 #640#
-        self.height = 720 #360#
+        self.width = 640#1280#1920
+        self.height = 480#720#1080
         self.display_lincomb = False
         self.crop = True
         self.score_threshold = 0.15
@@ -72,7 +72,7 @@ class VehicleDistance:
         self.display_fps = True
         self.display_text  = True
         self.display_bboxes = True
-        self.display_scores = False
+        self.display_scores = True
         
         self.fast_nms = True
         self.cross_class_nms =True

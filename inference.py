@@ -95,10 +95,10 @@ class VehicleDistance:
         self.score_threshold = 0.40
         self.top_k = 30
         self.display_masks = True
-        self.display_fps = False
+        self.display_fps = True
         self.display_text  = True
         self.display_bboxes = True
-        self.display_scores = False
+        self.display_scores = True
         self.fast_nms = True
         self.cross_class_nms =True
         self.config = 'yolact_plus_base_config'
