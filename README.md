@@ -8,8 +8,14 @@ It is based on the repositories [Social-Distance-Monitoring](https://github.com/
 
 ## System Requirements
 
-- For utilizing GPU you'll need CUDA version 10.x
-- Python 3.7
+- CUDA 10.2 (for utilizing GPU you'll need CUDA version 10.x)
+- Python 3.7 (3.6 should also be possible, 3.8 I haven't tested)
+
+## Used Stack
+
+- PyTorch 1.6.0 (with torchvision 0.7.0)
+- OpenCV 4.4.0
+- Flask 1.1.2
 
 ## Installation
 
