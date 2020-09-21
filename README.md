@@ -4,7 +4,7 @@ This repository holds the implementation of detecting vehicles and indicating ri
 
 It is based on the repositories [Social-Distance-Monitoring](https://github.com/paul-pias/Social-Distance-Monitoring) by Pias Paul and [YOLACT](https://github.com/dbolya/yolact) by Daniel Bolya.
 
-![image info](./data/output.gif)
+![Example output](./data/output.gif)
 
 ## System Requirements
 
@@ -87,6 +87,8 @@ Now you can run the webapp via:
 ```
 
 This starts the webserver and the webapp. With the standard configuration the webapp is locally reachable via [localhost:5000](http://localhost:5000).
+
+![Webapp UI](./data/WebappUI.png)
 
 ### Running from CLI
 
