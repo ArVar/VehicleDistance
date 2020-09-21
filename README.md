@@ -58,6 +58,8 @@ To be able to use YOLACT++, make sure you have the [CUDA Toolkit](https://develo
     python setup.py build develop
 ```
 
+### Download pre-trained Models
+
 The official [Yolact repository](https://github.com/dbolya/yolact) offers several pre-trained models:
 |    Image Size            |Model File (-m)                       |Config (-c)                   |
 |----------------|-------------------------------|-----------------------------|
@@ -68,15 +70,27 @@ The official [Yolact repository](https://github.com/dbolya/yolact) offers severa
 |550         |[yolact_plus_resnet50_54_800000.pth](https://drive.google.com/file/d/1ZPu1YR2UzGHQD0o1rEqy-j5bmEm3lbyP/view?usp=sharing)            |yolact_plus_resnet50            |
 |550          |[yolact_plus_base_54_800000.pth](https://drive.google.com/file/d/15id0Qq5eqRbkD-N3ZjDZXdCvRyIaHpFB/view?usp=sharing)|yolact_plus_base|
 
-## Things to consider
+Download the pre-trained weights and save in the folder `./weights` (related to your project root). For instance, the yolact_plus_base is hardcoded in `webapp.py`.
 
-Download the pre-trained weights and save in the folder `./weights` (related to your project root), then from your terminal run the following command based on your preference:
+### Running the webapp
+
+Now you can run the webapp via:
+
+```console
+    python server.py
+```
+
+This starts the webserver and the webapp. With the standard configuration the webapp is locally reachable via [localhost:5000](http://localhost:5000).
+
+### Running from CLI
+
+Alternatively, you can run the inference from your terminal with the following command:
 
 ```console
     python inference.py -m=weights/yolact_base_54_800000.pth -c=yolact_base -i 0
 ```
 
-Here 0 as id passed if you want to run the inference on webcam feed. If you don't parse any argument it will run with the default values. You can tweak the following values according to your preference.
+Here `-i 0` defines the device id. Use `0` if you want to run the inference on your webcam feed. If you don't parse any argument it will run with the default values. You can tweak the following values according to your preferences.
 
 |Input              |Standard Value |Description                  |
 |-------------------|---------------|-----------------------------|
