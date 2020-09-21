@@ -1,43 +1,45 @@
 # Vehicle-Distance-Monitoring
 
-## Introduction
+This repository holds the implementation of detecting vehicles and indicating risky distances using  [YOLACT++: Better Real-time Instance Segmentation](https://arxiv.org/abs/1912.06218)) for object detection.
 
-This repository holds the implementation of detecting vehicles and monitoring their distances using  [YOLACT++: Better Real-time Instance Segmentation](https://arxiv.org/abs/1912.06218)) for object detection.
-
-It is based on the repository [Social-Distance-Monitoring](https://github.com/paul-pias/Social-Distance-Monitoring) by Pias Paul.
+It is based on the repositories [Social-Distance-Monitoring](https://github.com/paul-pias/Social-Distance-Monitoring) by Pias Paul and [YOLACT](https://github.com/dbolya/yolact) by Daniel Bolya.
 
 ![image info](./data/output.gif)
 
-## User Guideline
-
-### System Requirements
+## System Requirements
 
 - For utilizing GPU you'll need CUDA version 10.x
 - Python 3.7
 
-### Installation
+## Installation
 
 This repo is modified to be used on Windows 10 (2004).
+
+I highly recommend to use a virtual environment with `conda` or `virtualenv`.
+
+First, you need to clone the repository and go into this directory (project root):
+
+```console
+    git clone https://github.com/ArVar/VehicleDistance.git
+    cd VehicleDistance
+```
+
 You can install all packages by running:
 
 ```console
     pip install -r requirements.txt
 ```
 
-or manually installing all packages listed there.
+You can also manually install all packages listed in this file.
 
-For the installation of torch using "pip" kindly follow the instructions from [Pytorch](https://pytorch.org/).
+Feel free to experiment with different versions of the packages (as I've done).
+When trying to build up on a newer stack, keep in mind to use the right CUDA toolkit and PyTorch combination.
+For the installation of PyTorch with "pip" please follow the instructions from [Pytorch](https://pytorch.org/).
 
-First, you need to clone the repository.
+This repo is mainly meant to watch the inference stream in your browser. When executing the `server.py` script a flask app will start and provide the interface.
+You can also run the inference using `inference.py` from command line (options see below).
 
-```console
-    git clone https://github.com/ArVar/Vehicle-Distance.git
-```
-
-You can run the inference using `inference.py` from command line (options see below).
-If you want to see your output in your browser, please execute the "server.py" script, which starts a flask app.
-
-If you want to run the inference on a ip camera need to use `WebcamVideoStream` with the following command:
+If you want to run the inference on a ip camera need to use `WebcamVideoStream` with the following source in `webapp.py`:
 
 ```console
     "rtsp://assigned_name_of_the_camera:assigned_password@camer_ip/"
@@ -49,14 +51,14 @@ An example stream is available at:
     "rtsp://170.93.143.139/rtplive/470011e600ef003a004ee33696235daa"
 ```
 
-To use YOLACT++, make sure you have the latest [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit) installed. Further, you need to compile deformable convolutional layers (from [DCNv2](https://github.com/CharlesShang/DCNv2/tree/pytorch_1.0)). You can achieve this by running:
+To be able to use YOLACT++, make sure you have the [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit) ($\geq$ 10.x) installed. Further, you need to compile deformable convolutional layers (from [DCNv2](https://github.com/CharlesShang/DCNv2/tree/pytorch_1.0)). You can achieve this by running (in project root):
 
 ```console
     cd external/DCNv2
     python setup.py build develop
 ```
 
-In the official [Yolact repository](https://github.com/dbolya/yolact) are several pre-trained model available:
+The official [Yolact repository](https://github.com/dbolya/yolact) offers several pre-trained models:
 |    Image Size            |Model File (-m)                       |Config (-c)                   |
 |----------------|-------------------------------|-----------------------------|
 |550|[yolact_resnet50_54_800000.pth](https://drive.google.com/file/d/1yp7ZbbDwvMiFJEq4ptVKTYTI2VeRDXl0/view?usp=sharing)            |yolact_resnet50            |
@@ -66,7 +68,7 @@ In the official [Yolact repository](https://github.com/dbolya/yolact) are severa
 |550         |[yolact_plus_resnet50_54_800000.pth](https://drive.google.com/file/d/1ZPu1YR2UzGHQD0o1rEqy-j5bmEm3lbyP/view?usp=sharing)            |yolact_plus_resnet50            |
 |550          |[yolact_plus_base_54_800000.pth](https://drive.google.com/file/d/15id0Qq5eqRbkD-N3ZjDZXdCvRyIaHpFB/view?usp=sharing)|yolact_plus_base|
 
-### Things to consider
+## Things to consider
 
 Download the pre-trained weights and save in the folder `./weights` (related to your project root), then from your terminal run the following command based on your preference:
 
@@ -76,23 +78,22 @@ Download the pre-trained weights and save in the folder `./weights` (related to 
 
 Here 0 as id passed if you want to run the inference on webcam feed. If you don't parse any argument it will run with the default values. You can tweak the following values according to your preference.
 
-|      Input          |Value                        |Description                         |
-|----------------|-------------------------------|-----------------------------|
+|Input              |Standard Value |Description                  |
+|-------------------|---------------|-----------------------------|
 |width, height      |`1280 x 720`   | Resolution of the output video.
-|display_lincomb    |`False`
+|display_lincomb    |`False`        | Display Lincomb masks (if the config uses them).
 |crop               |`True`         | For better segmentation use this flag as `True`.
 |score_threshold    |`0.15`         | The higher the value, the less objects are detected, the better the performance.
 |top_k              |`30`           | At max how many objects will the model consider to detect in a given frame.
 |display_masks      |`True`         | Draw segmentation masks.
-|display_fps        |`False`        |
-|display_text       |`True`
-|display_bboxes     |`True`
-|display_scores     |`False`
-|fast_nms           |`True`
-|cross_class_nms    |`True`
-|display_text       |`True`
+|display_fps        |`True`         | Display FPS counter.
+|display_text       |`True`         | Allow to display text.
+|display_bboxes     |`True`         | Display bounding boxes around detected objects.
+|display_scores     |`True`         | Display classification score.
+|fast_nms           |`True`         | Use fast NMS (Non-Maximum-Supression).
+|cross_class_nms    |`True`         | Use Cross-Class-NMS.
 
-### Measuring the Distances
+## Measuring the Distances
 
 To measure distance between two vehicles Euclidean distance is used. **Euclidean distance** or **Euclidean metric** is the "ordinary" [straight-line](https://en.wikipedia.org/wiki/Straight_line "Straight line")  [distance](https://en.wikipedia.org/wiki/Distance "Distance") between two points in [Euclidean space](https://en.wikipedia.org/wiki/Euclidean_space "Euclidean space").
 
@@ -103,7 +104,7 @@ In the [Euclidean plane](https://en.wikipedia.org/wiki/Euclidean_plane "Euclidea
 
 This formula was applied in the **draw_distance(boxes)** function where we got all the bounding boxes of vehicle classes `car` and `truck` in a given frame from the model where each bounding is a regression value consisting `(x,y,w,h)` . Where `x` and `y` represent 2 coordinates of the vehicle. `w` and `h` represent width and height correspondingly. All combinations of boxes are used to calculate the distances between them.
 
-### Acknowledgements
+## Acknowledgements
 
 Thanks to **Pias Paul** for providing his [repository](https://github.com/paul-pias/Social-Distance-Monitoring) on github. It was a very good starting point with just very few caveats when running on Windows. I recommend, checking out his other repos as well.
 
