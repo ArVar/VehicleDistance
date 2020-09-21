@@ -47,6 +47,10 @@ if torch.cuda.is_available():
     torch.backends.cudnn.deterministic = True
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
+##  If you want to see in-terminal gpu usage
+
+print("Initial GPU Usage")
+gpu_usage()
 
 cfg.mask_proto_debug = False
 iou_thresholds = [x / 100 for x in range(80, 100, 5)]       ## Change this value in range of 40-90 for designated performances
@@ -89,7 +93,6 @@ class VehicleDistance:
         self.model = self.model.to(device,non_blocking=True)
         print(' Done.')
         self.model_path = SavePath.from_str(self.trained_model)
-        
     
     def prep_display(self,dets_out, img, h, w, undo_transform=True, class_color=False, mask_alpha=0.45, fps_str=''):
         """
@@ -231,10 +234,7 @@ class VehicleDistance:
                             cv2.line(img_numpy, (subset[0][2], subset[0][3]), (subset[1][2], subset[1][3]), (0,255,0) , lineThickness)
                     log["total_vehicle_in_red_zone"] = red_counter//2
                     log["total_vehicle_in_green_zone"] = green_counter//2
-                    # gc.collect()
-                    
-            
-            
+                    # gc.collect()     
             
             for j in reversed(range(num_dets_to_consider)):
                 x1, y1, x2, y2 = boxes[j, :]
@@ -264,7 +264,6 @@ class VehicleDistance:
 
                     cv2.rectangle(img_numpy, (x1, y1), (x1 + text_w, y1 - text_h - 4), color, -1)
                     cv2.putText(img_numpy, text_str, text_pt, font_face, font_scale, text_color, font_thickness, cv2.LINE_AA)
-        
         
         return img_numpy
     
@@ -297,22 +296,34 @@ class VehicleDistance:
             opacity = 0.4
             
             #cv2.rectangle(overlay, (0, 0), (1280, 100), (255,255,255), -1)
-            cv2.rectangle(overlay, (0, 615), (400, 720), (255,255,255), -1)
+            #cv2.rectangle(overlay, (0, 615), (400, 720), (255,255,255), -1)
+
+            #cv2.rectangle(overlay, (0, 0), (self.width, int(self.height*.139)), (255,255,255), -1)
+            cv2.rectangle(overlay, (0, int(self.height*.8)), (int(self.width*.45), self.height), (255,255,255), -1)
             cv2.addWeighted(overlay, opacity, background, 1-opacity, 0, inputs)
 
+            #cv2.putText(inputs,title, (int(self.width*.1524),int(self.height*.0699)), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)            ### Text Main Title
+            cv2.putText(inputs,total_vehicle, (int(self.width*.04),int(self.height*.86)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 0), 1, cv2.LINE_AA)      ### Text Total vehicle
+
+            cv2.line(inputs, (int(self.width*.0119),int(self.height*.917)), (int(self.width*.0313),int(self.height*.917)), (0,0,255) , notification_bar_thickness)  ### Line red-zone
+            cv2.putText(inputs, red_zone, (int(self.width*.04),int(self.height*.93)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 1, cv2.LINE_AA)                    ### Text Red Zone vehicle
+
+            cv2.line(inputs, (int(self.width*.0119),int(self.height*.9723)), (int(self.width*.0313),int(self.height*.9723)), (0,255,0) , notification_bar_thickness)### Line Green-zone
+            cv2.putText(inputs,green_zone, (int(self.width*.04),int(self.height*.98)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 255, 0), 1, cv2.LINE_AA)                   ### Text green Zone vehicle
+
             #cv2.putText(inputs, title, (195,50), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)               ### Text Main Title
-            cv2.putText(inputs, total_vehicle, (50,640), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 0), 1, cv2.LINE_AA)      ### Text Total vehicle
+            #cv2.putText(inputs, total_vehicle, (50,640), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 0), 1, cv2.LINE_AA)      ### Text Total vehicle
 
-            cv2.line(inputs, (15,660), (40,660), (0,0,255) , notification_bar_thickness)                             ### Line red-zone
-            cv2.putText(inputs, red_zone, (50,670), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 1, cv2.LINE_AA)        ### Text Red Zone vehicle
+            #cv2.line(inputs, (15,660), (40,660), (0,0,255) , notification_bar_thickness)                             ### Line red-zone
+            #cv2.putText(inputs, red_zone, (50,670), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 1, cv2.LINE_AA)        ### Text Red Zone vehicle
 
-            cv2.line(inputs, (15,700), (40,700), (0,255,0), notification_bar_thickness)                             ### Line Green-zone
-            cv2.putText(inputs, green_zone, (50,710), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 255, 0), 1, cv2.LINE_AA)      ### Text green Zone vehicle
+            #cv2.line(inputs, (15,700), (40,700), (0,255,0), notification_bar_thickness)                             ### Line Green-zone
+            #cv2.putText(inputs, green_zone, (50,710), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 255, 0), 1, cv2.LINE_AA)      ### Text green Zone vehicle
             
             with torch.no_grad():
                 inputs = torch.from_numpy(inputs).cuda().float()
                 images = FastBaseTransform()(inputs.unsqueeze(0))
-                images = images.to(device )
+                images = images.to(device)
                 preds = self.model(images)
                 frame = self.prep_display(preds, inputs, None, None, undo_transform=False)
 

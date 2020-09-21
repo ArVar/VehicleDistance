@@ -66,8 +66,8 @@ if torch.cuda.is_available():
 
 ##  If you want to see in-terminal gpu usage
 
-# print("Initial GPU Usage")
-# gpu_usage()
+print("Initial GPU Usage")
+gpu_usage()
 
 
 cfg.mask_proto_debug = False
@@ -76,7 +76,7 @@ coco_cats = {} # Call prep_coco_cats to fill this
 coco_cats_inv = {}
 color_cache = defaultdict(lambda: {})
 
-## Creating dictinary to store logs 
+## Creating dictionary to store logs 
 log = {"total_vehicle": 0,"total_vehicle_in_red_zone": 0 , "total_vehicle_in_green_zone": 0}
 
 
@@ -264,7 +264,7 @@ class VehicleDistance:
 
                 if self.display_text:
                     _class = cfg.dataset.class_names[classes[j]]
-                    if _class == "vehicle":
+                    if _class == "car" or _class == "truck":
                         log["total_vehicle"] = num_dets_to_consider
                         distance_boxes.append(boxes[j, :].tolist())
                         draw_distance(distance_boxes)
@@ -301,8 +301,8 @@ class VehicleDistance:
             q.task_done()
             ## Desiging the frame with necessary infos
             title = "Vehicle Distance Monitoring"
-            total_vehicle = "Total = {}".format(log["total_vehicle"])
-            
+            total_vehicle = "Total Count = {}".format(log["total_vehicle"])
+            # print(log)
             red_zone = "High Risk = {}".format(log["total_vehicle_in_red_zone"])
             green_zone = "Safe Distance = {}".format(log["total_vehicle_in_green_zone"])
             notification_bar_thickness = 3
@@ -313,17 +313,17 @@ class VehicleDistance:
             
             
             cv2.rectangle(overlay, (0, 0), (self.width, int(self.height*.139)), (255,255,255), -1)
-            cv2.rectangle(overlay, (0, int(self.height*.8545)), (int(self.width*.3127), self.height), (255,255,255), -1)
-            cv2.addWeighted(overlay,opacity,background,1-opacity,0, inputs)
+            cv2.rectangle(overlay, (0, int(self.height*.8)), (int(self.width*.45), self.height), (255,255,255), -1)
+            cv2.addWeighted(overlay, opacity, background, 1-opacity, 0, inputs)
 
-            cv2.putText(inputs,title, (int(self.width*.1524),int(self.height*.0699)), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)               ### Text Main Title
-            cv2.putText(inputs,total_vehicle, (int(self.width*.0393),int(self.height*.889)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 0), 2, cv2.LINE_AA)      ### Text Total vehicle
+            #cv2.putText(inputs,title, (int(self.width*.1524),int(self.height*.0699)), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)            ### Text Main Title
+            cv2.putText(inputs,total_vehicle, (int(self.width*.04),int(self.height*.86)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 0), 1, cv2.LINE_AA)      ### Text Total vehicle
 
-            cv2.line(inputs, (int(self.width*.0119),int(self.height*.917)), (int(self.width*.0313),int(self.height*.917)), (0,0,255) , notification_bar_thickness)                             ### Line red-zone
-            cv2.putText(inputs,red_zone, (int(self.width*.0393),int(self.height*.931)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 1, cv2.LINE_AA)        ### Text Red Zone vehicle
+            cv2.line(inputs, (int(self.width*.0119),int(self.height*.917)), (int(self.width*.0313),int(self.height*.917)), (0,0,255) , notification_bar_thickness)  ### Line red-zone
+            cv2.putText(inputs, red_zone, (int(self.width*.04),int(self.height*.93)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 0, 255), 1, cv2.LINE_AA)                    ### Text Red Zone vehicle
 
-            cv2.line(inputs, (int(self.width*.0119),int(self.height*.9723)), (int(self.width*.0313),int(self.height*.9723)), (0,255,0) , notification_bar_thickness)                             ### Line Green-zone
-            cv2.putText(inputs,green_zone, (int(self.width*.0393),int(self.height*.9864)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 255, 0), 1, cv2.LINE_AA)      ### Text green Zone vehicle
+            cv2.line(inputs, (int(self.width*.0119),int(self.height*.9723)), (int(self.width*.0313),int(self.height*.9723)), (0,255,0) , notification_bar_thickness)### Line Green-zone
+            cv2.putText(inputs,green_zone, (int(self.width*.04),int(self.height*.98)), cv2.FONT_HERSHEY_DUPLEX, 0.8, (0, 255, 0), 1, cv2.LINE_AA)                   ### Text green Zone vehicle
             
 
             with torch.no_grad():
