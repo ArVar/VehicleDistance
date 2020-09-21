@@ -2,54 +2,35 @@
 <script type="text/javascript">
     function disableButton(btn) {
 
-        $("#feed").attr("src", "{{ url_for('video_feed') }}");
-        
-        
-        
-
+        $("#feed").attr("src", "{{ url_for('video_feed') }}"); 
         
     }
 </script>
 
-    
+<main class="mt-10">
 
-<!-- 1st Column -->
-<div class="columns">
-    <div class="column is-narrow">
-        <div class="box" style="width: 888px; height: 480px;">
-            <p class="title is-5">Camera</p>
-            <hr>
-            <img id="feed" src="" />
-                
-            <hr>
+    <div class="mb-4 md:mb-0 w-full mx-auto relative">
+      <div class="px-4 lg:px-0">
+        <h2 class="text-4xl text-center font-semibold text-gray-800 leading-tight">
+            Vehicle Distance Monitoring
+        </h2>
+      </div>
 
-        </div>
     </div>
-    <hr>
 
-    <!-- 2nd Column -->
-    <div class="column">
-        <div class="box" style="width: 300px; height: 200px; position: fixed;">
-             <!-- Right side -->
-             <p class="title is-5">
-                Start Camera Feed
-            </p>  
-			<nav class="level">
-  
-                    <!-- <p class="control">
-                        <br>
-                        <input id = "id" class="input" type="text" placeholder="Camera ID"> <br>
-                    </p>
-                     -->
-
-                <div class="field is-grouped">
-                    <div class="control">
-                        <br>
-                        <button id="sub-button" class="button is-link" onclick="disableButton(this)">Start</button>    
-                    </div>
-                </div>
-            </nav>
-            <hr>
-        </div>
+<div class="bg-white rounded shadow p-6 m-4 w-full lg">
+    <div class="mb-4">
+      <img id="feed" src="" class="w-full object-cover"/>
+      <div class="flex mt-4">
+        <button
+          class="flex-no-shrink p-2 border-2 rounded text-teal-500 border-teal hover:text-white hover:bg-teal-500"
+          onclick="disableButton(this)"
+        >
+          Start Monitoring
+        </button>
+      </div>
     </div>
-    {% endblock %}
+</div>
+
+</main>
+{% endblock %}
