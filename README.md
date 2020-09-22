@@ -90,6 +90,8 @@ This starts the webserver and the webapp. With the standard configuration the we
 
 ![Webapp UI](./data/WebappUI.png)
 
+You can specify a path (URL) for HTTPS and RTSP streams or just a digit for one of your webcam devices.
+
 ### Running from CLI
 
 Alternatively, you can run the inference from your terminal with the following command:
