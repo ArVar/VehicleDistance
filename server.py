@@ -42,7 +42,9 @@ def video_feed(streamPath):
         id = str(streamPath)
     #id = 'https://www.youtube.com/watch?v=EbyOoMg191Y'
     #id  = 2    # Webcam with id 2
-    if int(id) in range(10):
+
+    # Convert to int if id represents a digit
+    if id.isdigit():
         id = int(id)
         
     return Response(gen(VehicleDistance(id)), mimetype='multipart/x-mixed-replace; boundary=frame')
