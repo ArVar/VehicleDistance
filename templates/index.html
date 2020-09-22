@@ -1,9 +1,12 @@
 {% extends 'base.html' %} {% block content %}
 <script type="text/javascript">
-    function disableButton(btn) {
+    function startStream(btn) {
 
-        $("#feed").attr("src", "{{ url_for('video_feed') }}"); 
-        
+        var streamPath = $("#inputPath").val();
+        var feedPath = "video_feed/";
+        var targetUrl = feedPath.concat(streamPath) 
+        $("#feed").attr("src", targetUrl); 
+
     }
 </script>
 
@@ -22,9 +25,15 @@
     <div class="mb-4">
       <img id="feed" src="" class="w-full object-cover"/>
       <div class="flex mt-4">
+        <input
+          id="inputPath"
+          class="shadow appearance-none border rounded w-full py-2 px-3 mr-4 text-grey-darker"
+          placeholder="Add Source (use path for HTTP or RTSP stream, use digit for your connected webcam device )"
+          value="rtsp://170.93.143.139/rtplive/470011e600ef003a004ee33696235daa"
+        >
         <button
           class="flex-no-shrink p-2 border-2 rounded text-teal-500 border-teal hover:text-white hover:bg-teal-500"
-          onclick="disableButton(this)"
+          onclick="startStream(this)"
         >
           Start Monitoring
         </button>

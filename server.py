@@ -34,11 +34,17 @@ def gen(camera):
                 out.release()
 
 
-@app.route('/video_feed')
-def video_feed():
-    id = 'rtsp://170.93.143.139/rtplive/470011e600ef003a004ee33696235daa'
+@app.route('/video_feed/<path:streamPath>')
+def video_feed(streamPath):
+    if not streamPath:
+        id = 'rtsp://170.93.143.139/rtplive/470011e600ef003a004ee33696235daa'
+    else:
+        id = str(streamPath)
     #id = 'https://www.youtube.com/watch?v=EbyOoMg191Y'
     #id  = 2    # Webcam with id 2
+    if int(id) in range(10):
+        id = int(id)
+        
     return Response(gen(VehicleDistance(id)), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/get_response', methods = ['POST']) 
